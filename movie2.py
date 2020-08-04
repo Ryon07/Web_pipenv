@@ -2,16 +2,25 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 
-URL = "https://movie.naver.com/movie/running/current.nhn"
-response = requests.get(URL)
+reponse = requests.get('https://movie.naver.com/movie/running/current.nhn')
 
-soup = BeautifulSoup(response.text, "html.parser")
+soup = BeautifulSoup(reponse.text, 'html.parser')
 
-movie_data = []
-for i in soup.select("dt.tit a"):
-    movie_dict = {}
-    movie_dict["title"] = i.text
-    movie_dict["code"] = i["href"].split("code=")[1]
-    movie_data.append(movie_dict)
+movie_data = soup.select(
+    '#content > div.article > div:nth-child(1) > div.lst_wrap > ul > li'
+)
 
-print(movie_data)
+final_movie_data = []
+
+for movie in movie_data:
+    a_tag = movie.select_one('dl > dt > a')
+    movie_title=a_tag.text
+    movie_code = a_tag['href'].split('code=')[1]
+    movie_list = {
+        'title' : movie_title,
+        'code' : movie_code
+    }
+
+    final_movie_data.append(movie_list)
+
+    print(final_movie_data)
